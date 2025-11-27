@@ -18,8 +18,16 @@
       </ul>
     </div>
 
+        <div class="search-container">
+            <input type="text" v-model="search" placeholder="search posts" class="search-bar" />
+            <button class="search-button">🔍</button>
+        </div>
+        <div class="results">
+            <p>Search Query: {{ search }}</p>
+            <!-- Add any other relevant content or results here -->
+        </div>
     <ul v-if="posts.length">
-      <li v-for="post in posts" :key="post.id" class="post-item">
+      <li v-for="post in filteredPosts" :key="post.id" class="post-item">
         <h2>{{ post.title }}</h2>
         <p>{{ post.body }}</p>
       </li>
@@ -41,6 +49,7 @@ export default {
       isNavbarVisible: false,
       // posts data property, holds the fetched posts
       posts: [],
+      search: '',
       Loader: true,
       
     };
@@ -57,10 +66,8 @@ export default {
       this.isNavbarVisible = !this.isNavbarVisible;
     },
     // ==========================================================
-    // update posts array 
-    // Fetch posts using the service in services/postService.js
-    // use async for non-blocking call
     // ==========================================================
+
     async loadPosts() {
       try {
         this.posts = await fetchPosts();
@@ -76,6 +83,18 @@ export default {
       }
     },
   },
+  computed: {
+    // ==========================================================
+    // do a filter on the posts array and remove any items in it which 
+    // don't match the applied filter. Return the new array to the template
+    // search is case insensetive 
+    // ==========================================================
+    filteredPosts: function() {
+     return this.posts.filter((post) => {
+      return post.title.toLowerCase().includes(this.search.toLowerCase());
+     }); 
+    }
+  }
 };
 </script>
 
@@ -225,6 +244,34 @@ body {
 .navbar ul li a {
   color: white; /* Link color */
   text-decoration: none; /* Remove underline */
+}
+
+.search-container {
+    display: flex;
+    border: 2px solid #ccc;
+    border-radius: 25px;
+    overflow: hidden;
+    background-color: white;
+}
+
+.search-bar {
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    outline: none;
+}
+
+.search-button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.search-button:hover {
+    background-color: #45a049;
 }
 
 </style>
